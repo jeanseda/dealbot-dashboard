@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: dealbot-dashboard
+    runtime: python
+    buildCommand: ./build.sh
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dealbot-db
+          property: connectionString
+      - key: WHATSAPP_NUMBER
+        value: +14155238886
+      - key: WHATSAPP_SANDBOX_JOIN
+        value: join lucky-spoke
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+databases:
+  - name: dealbot-db
+    plan: free
+    databaseName: dealbot
+    user: dealbot

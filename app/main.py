@@ -3,7 +3,6 @@ DealBot Dashboard - FastAPI Web App
 Tracks Amazon deals via WhatsApp bot.
 """
 
-import sqlite3
 import os
 from pathlib import Path
 from datetime import datetime
@@ -14,19 +13,13 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from app.database import get_db, P, db_fetchone, db_fetchall, db_execute
+
 # ── Config ────────────────────────────────────────────────────────────────────
 
 BASE_DIR = Path(__file__).parent
 TEMPLATES_DIR = BASE_DIR / "templates"
 STATIC_DIR = BASE_DIR / "static"
-
-# DB path – use env var or fallback to deal-tracker project
-DB_PATH = Path(
-    os.getenv(
-        "DEAL_TRACKER_DB",
-        str(Path.home() / ".openclaw/workspace/deal-tracker/deal_tracker.db"),
-    )
-)
 
 WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "+14155238886")
 WHATSAPP_SANDBOX_JOIN = os.getenv("WHATSAPP_SANDBOX_JOIN", "join lucky-spoke")
@@ -40,82 +33,79 @@ templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 # ── Database helpers ──────────────────────────────────────────────────────────
 
-def get_db() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(DB_PATH))
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
 def get_user_by_phone(phone: str) -> Optional[dict]:
     with get_db() as conn:
-        row = conn.execute(
-            "SELECT * FROM users WHERE phone_number = ?", (phone,)
-        ).fetchone()
-        return dict(row) if row else None
+        return db_fetchone(
+            conn,
+            f"SELECT * FROM users WHERE phone_number = {P}",
+            (phone,),
+        )
 
 
 def get_products_for_user(user_id: int) -> list[dict]:
     with get_db() as conn:
-        rows = conn.execute(
-            """SELECT * FROM tracked_products
-               WHERE user_id = ? AND is_active = 1
+        return db_fetchall(
+            conn,
+            f"""SELECT * FROM tracked_products
+               WHERE user_id = {P} AND is_active = 1
                ORDER BY created_at DESC""",
             (user_id,),
-        ).fetchall()
-        return [dict(r) for r in rows]
+        )
 
 
 def get_product(product_id: int) -> Optional[dict]:
     with get_db() as conn:
-        row = conn.execute(
-            "SELECT * FROM tracked_products WHERE id = ?", (product_id,)
-        ).fetchone()
-        return dict(row) if row else None
+        return db_fetchone(
+            conn,
+            f"SELECT * FROM tracked_products WHERE id = {P}",
+            (product_id,),
+        )
 
 
 def get_price_history(product_id: int) -> list[dict]:
     with get_db() as conn:
-        rows = conn.execute(
-            """SELECT price, recorded_at FROM price_history
-               WHERE product_id = ?
+        return db_fetchall(
+            conn,
+            f"""SELECT price, recorded_at FROM price_history
+               WHERE product_id = {P}
                ORDER BY recorded_at ASC
                LIMIT 60""",
             (product_id,),
-        ).fetchall()
-        return [dict(r) for r in rows]
+        )
 
 
 def get_all_users_summary() -> list[dict]:
     with get_db() as conn:
-        rows = conn.execute(
-            """SELECT u.phone_number,
+        return db_fetchall(
+            conn,
+            f"""SELECT u.phone_number,
                       COUNT(p.id) as product_count,
                       u.created_at
                FROM users u
                LEFT JOIN tracked_products p ON p.user_id = u.id AND p.is_active = 1
                GROUP BY u.id
                ORDER BY u.created_at DESC""",
-        ).fetchall()
-        return [dict(r) for r in rows]
+        )
 
 
 def delete_product(product_id: int) -> bool:
     with get_db() as conn:
-        conn.execute(
-            "UPDATE tracked_products SET is_active = 0 WHERE id = ?", (product_id,)
+        db_execute(
+            conn,
+            f"UPDATE tracked_products SET is_active = 0 WHERE id = {P}",
+            (product_id,),
         )
-        conn.commit()
-        return True
+    return True
 
 
 def update_target_price(product_id: int, target_price: float) -> bool:
     with get_db() as conn:
-        conn.execute(
-            "UPDATE tracked_products SET target_price = ? WHERE id = ?",
+        db_execute(
+            conn,
+            f"UPDATE tracked_products SET target_price = {P} WHERE id = {P}",
             (target_price, product_id),
         )
-        conn.commit()
-        return True
+    return True
 
 
 # ── Template helpers ──────────────────────────────────────────────────────────
@@ -166,10 +156,13 @@ async def landing(request: Request):
     stats = {"total_users": 0, "total_products": 0}
     try:
         with get_db() as conn:
-            stats["total_users"] = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
-            stats["total_products"] = conn.execute(
-                "SELECT COUNT(*) FROM tracked_products WHERE is_active = 1"
-            ).fetchone()[0]
+            row = db_fetchone(conn, "SELECT COUNT(*) AS cnt FROM users")
+            stats["total_users"] = row["cnt"] if row else 0
+            row = db_fetchone(
+                conn,
+                "SELECT COUNT(*) AS cnt FROM tracked_products WHERE is_active = 1",
+            )
+            stats["total_products"] = row["cnt"] if row else 0
     except Exception:
         pass
 
@@ -190,7 +183,6 @@ async def dashboard(request: Request, phone: str = ""):
         user = get_user_by_phone(phone)
         if user:
             products = get_products_for_user(user["id"])
-            # Attach price status to each product
             for p in products:
                 p["status"] = price_status(p.get("current_price"), p.get("target_price"))
                 p["savings"] = (
@@ -222,15 +214,16 @@ async def product_detail(request: Request, product_id: int):
 
     history = get_price_history(product_id)
 
-    # Build chart data
-    chart_labels = [h["recorded_at"][:10] for h in history]
+    chart_labels = [h["recorded_at"][:10] if isinstance(h["recorded_at"], str)
+                    else str(h["recorded_at"])[:10] for h in history]
     chart_prices = [h["price"] for h in history]
 
-    # Get user phone for back-link
     with get_db() as conn:
-        user_row = conn.execute(
-            "SELECT phone_number FROM users WHERE id = ?", (product["user_id"],)
-        ).fetchone()
+        user_row = db_fetchone(
+            conn,
+            f"SELECT phone_number FROM users WHERE id = {P}",
+            (product["user_id"],),
+        )
     user_phone = user_row["phone_number"] if user_row else ""
 
     return templates.TemplateResponse(
@@ -257,9 +250,11 @@ async def delete_product_route(product_id: int, request: Request):
         raise HTTPException(status_code=404, detail="Producto no encontrado")
 
     with get_db() as conn:
-        user_row = conn.execute(
-            "SELECT phone_number FROM users WHERE id = ?", (product["user_id"],)
-        ).fetchone()
+        user_row = db_fetchone(
+            conn,
+            f"SELECT phone_number FROM users WHERE id = {P}",
+            (product["user_id"],),
+        )
     phone = user_row["phone_number"] if user_row else ""
 
     delete_product(product_id)
