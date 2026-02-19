@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}DealBot 🎯 — Rastrea precios en Amazon por WhatsApp{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="text-center py-16">
+  <div class="inline-flex items-center gap-2 bg-brand-100 text-brand-700 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
+    <span class="w-2 h-2 bg-brand-500 rounded-full animate-pulse"></span>
+    Bot activo 24/7
+  </div>
+
+  <h1 class="text-5xl sm:text-6xl font-bold text-slate-900 leading-tight mb-6">
+    Ahorra en Amazon<br />
+    <span class="text-brand-600">sin esfuerzo</span> 🎯
+  </h1>
+
+  <p class="text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+    DealBot rastrea los precios de tus productos favoritos en Amazon y te avisa por
+    <strong>WhatsApp</strong> cuando el precio baja al nivel que tú elijas.
+    Sin apps, sin cuentas — solo un mensaje.
+  </p>
+
+  <!-- CTA Buttons -->
+  <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+    <a href="https://wa.me/{{ whatsapp_number | replace('+','') }}?text=Hola%20DealBot!%20Quiero%20rastrear%20un%20precio"
+       target="_blank"
+       class="group inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold text-lg px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+      </svg>
+      Enviar link en WhatsApp
+    </a>
+
+    <a href="/dashboard"
+       class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 font-medium text-lg px-6 py-4 rounded-2xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition-all">
+      Ver mi dashboard →
+    </a>
+  </div>
+
+  <!-- WhatsApp number hint -->
+  <p class="mt-6 text-sm text-slate-500">
+    Número de WhatsApp:
+    <code class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">{{ whatsapp_number }}</code>
+  </p>
+</section>
+
+<!-- How it works -->
+<section class="py-12">
+  <h2 class="text-3xl font-bold text-center text-slate-900 mb-12">¿Cómo funciona?</h2>
+  <div class="grid sm:grid-cols-3 gap-8">
+
+    <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+      <div class="text-5xl mb-4">📱</div>
+      <div class="font-semibold text-slate-800 mb-2 text-lg">1. Escríbenos</div>
+      <p class="text-slate-500 text-sm leading-relaxed">
+        Abre WhatsApp y envía un mensaje a <strong>{{ whatsapp_number }}</strong>.
+        El bot te contestará de inmediato.
+      </p>
+    </div>
+
+    <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+      <div class="text-5xl mb-4">🔗</div>
+      <div class="font-semibold text-slate-800 mb-2 text-lg">2. Pega el link</div>
+      <p class="text-slate-500 text-sm leading-relaxed">
+        Comparte cualquier link de Amazon. Opcionalmente, dile el precio objetivo
+        ("quiero que me avises si baja de $150").
+      </p>
+    </div>
+
+    <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+      <div class="text-5xl mb-4">🔔</div>
+      <div class="font-semibold text-slate-800 mb-2 text-lg">3. Recibe alertas</div>
+      <p class="text-slate-500 text-sm leading-relaxed">
+        DealBot revisa los precios automáticamente y te notifica cuando encuentre
+        una oferta que se ajuste a tu presupuesto.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Stats bar -->
+{% if stats.total_users > 0 or stats.total_products > 0 %}
+<section class="py-8">
+  <div class="bg-gradient-to-r from-brand-600 to-brand-700 rounded-2xl p-8 text-white text-center">
+    <div class="grid sm:grid-cols-2 gap-8">
+      <div>
+        <div class="text-4xl font-bold">{{ stats.total_users }}</div>
+        <div class="text-brand-100 mt-1">usuarios activos</div>
+      </div>
+      <div>
+        <div class="text-4xl font-bold">{{ stats.total_products }}</div>
+        <div class="text-brand-100 mt-1">productos rastreados</div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Sample commands -->
+<section class="py-12">
+  <h2 class="text-3xl font-bold text-center text-slate-900 mb-4">Comandos disponibles</h2>
+  <p class="text-center text-slate-500 mb-10">Escríbele a DealBot lo que necesitas — entiende lenguaje natural.</p>
+
+  <div class="max-w-2xl mx-auto space-y-3">
+    {% set commands = [
+      ("📦 Rastrear producto", "https://amazon.com/dp/B0XXXXXXX", "Pega cualquier URL de Amazon"),
+      ("🎯 Poner precio objetivo", "Avísame si baja de $80", "DealBot actualizará tu alerta"),
+      ("📋 Ver mis productos", "Lista mis productos", "Te muestra todo lo que estás rastreando"),
+      ("🗑️ Eliminar", "Eliminar [número]", "Borra un producto de tu lista"),
+    ] %}
+    {% for icon_label, example, desc in commands %}
+    <div class="flex items-start gap-4 bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
+      <div class="flex-shrink-0 w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-lg">
+        {{ icon_label.split(" ")[0] }}
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="font-medium text-slate-800">{{ icon_label.split(" ", 1)[1] }}</div>
+        <code class="text-sm text-brand-600 font-mono">{{ example }}</code>
+        <p class="text-xs text-slate-500 mt-0.5">{{ desc }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Dashboard CTA -->
+<section class="py-12 text-center">
+  <div class="bg-slate-900 rounded-2xl p-10 text-white">
+    <h2 class="text-3xl font-bold mb-4">¿Ya eres usuario?</h2>
+    <p class="text-slate-400 mb-8 text-lg">Accede a tu dashboard para ver y gestionar todos tus productos rastreados.</p>
+    <form action="/dashboard" method="get" class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+      <input type="tel"
+             name="phone"
+             placeholder="+1 (555) 000-0000"
+             class="flex-1 bg-slate-800 border border-slate-700 text-white placeholder-slate-500 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
+             required />
+      <button type="submit"
+              class="bg-brand-600 hover:bg-brand-500 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+        Ver dashboard →
+      </button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

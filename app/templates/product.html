@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% block title %}{{ product.title or "Producto" }} — DealBot 🎯{% endblock %}
+
+{% block content %}
+
+<!-- Back link -->
+<div class="mb-6">
+  <a href="/dashboard?phone={{ user_phone }}"
+     class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors group">
+    <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Volver al dashboard
+  </a>
+</div>
+
+<!-- Product header -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+  <div class="flex flex-col md:flex-row gap-0">
+
+    <!-- Image -->
+    <div class="md:w-64 bg-slate-50 flex items-center justify-center p-8 flex-shrink-0">
+      {% if product.image_url %}
+      <img src="{{ product.image_url }}"
+           alt="{{ product.title or 'Producto' }}"
+           class="w-48 h-48 object-contain" />
+      {% else %}
+      <div class="w-48 h-48 flex items-center justify-center text-6xl text-slate-200">📦</div>
+      {% endif %}
+    </div>
+
+    <!-- Info -->
+    <div class="flex-1 p-6 md:p-8">
+      <!-- Badges -->
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xs font-semibold uppercase bg-orange-100 text-orange-700 px-2.5 py-0.5 rounded-full">
+          {{ product.source }}
+        </span>
+        {% if product.asin %}
+        <span class="text-xs text-slate-400 font-mono">ASIN: {{ product.asin }}</span>
+        {% endif %}
+        {% if status == 'deal' %}
+        <span class="badge-deal text-xs font-semibold bg-brand-100 text-brand-700 px-2.5 py-0.5 rounded-full">
+          🎉 ¡Precio objetivo alcanzado!
+        </span>
+        {% elif status == 'close' %}
+        <span class="text-xs font-semibold bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full">
+          🔥 Cerca del objetivo
+        </span>
+        {% endif %}
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-2xl font-bold text-slate-900 mb-4 leading-snug">
+        {{ product.title or "Producto sin título" }}
+      </h1>
+
+      <!-- Price cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div class="bg-slate-50 rounded-xl p-4 text-center">
+          <div class="text-xs text-slate-400 mb-1">Precio actual</div>
+          <div class="text-2xl font-bold
+            {% if status == 'deal' %}text-brand-600
+            {% elif status == 'close' %}text-amber-500
+            {% else %}text-slate-800{% endif %}">
+            {{ product.current_price | fmt_price }}
+          </div>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-4 text-center">
+          <div class="text-xs text-slate-400 mb-1">Precio objetivo</div>
+          <div class="text-2xl font-bold text-slate-700">{{ product.target_price | fmt_price }}</div>
+        </div>
+        <div class="bg-green-50 rounded-xl p-4 text-center">
+          <div class="text-xs text-slate-400 mb-1">📉 Mínimo histórico</div>
+          <div class="text-2xl font-bold text-green-600">{{ product.lowest_price | fmt_price }}</div>
+        </div>
+        <div class="bg-red-50 rounded-xl p-4 text-center">
+          <div class="text-xs text-slate-400 mb-1">📈 Máximo histórico</div>
+          <div class="text-2xl font-bold text-red-500">{{ product.highest_price | fmt_price }}</div>
+        </div>
+      </div>
+
+      <!-- Meta -->
+      <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-500 mb-6">
+        {% if product.last_checked_at %}
+        <span>🕐 Última revisión: {{ product.last_checked_at | fmt_date }}</span>
+        {% endif %}
+        {% if product.created_at %}
+        <span>📅 Rastreando desde: {{ product.created_at | fmt_date }}</span>
+        {% endif %}
+      </div>
+
+      <!-- External link -->
+      <div class="flex flex-wrap gap-3">
+        <a href="{{ product.url }}"
+           target="_blank"
+           class="inline-flex items-center gap-2 text-sm bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-medium transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+          </svg>
+          Ver en Amazon
+        </a>
+
+        <!-- Delete -->
+        <form action="/product/{{ product.id }}/delete" method="post">
+          <button type="submit"
+                  onclick="return confirm('¿Eliminar este producto?')"
+                  class="inline-flex items-center gap-2 text-sm text-red-500 hover:text-red-700 border border-red-200 hover:border-red-300 hover:bg-red-50 px-4 py-2 rounded-xl font-medium transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            Eliminar producto
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Edit target price -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
+  <h2 class="text-lg font-semibold text-slate-800 mb-1 flex items-center gap-2">
+    🎯 Precio objetivo
+  </h2>
+  <p class="text-sm text-slate-500 mb-4">
+    DealBot te avisará por WhatsApp cuando el precio baje a este nivel.
+  </p>
+
+  <form action="/product/{{ product.id }}/target" method="post" class="flex flex-col sm:flex-row gap-3 max-w-sm">
+    <div class="relative flex-1">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
+      <input type="number"
+             name="target_price"
+             step="0.01"
+             min="0.01"
+             value="{{ product.target_price or '' }}"
+             placeholder="0.00"
+             class="w-full pl-8 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-lg font-mono"
+             required />
+    </div>
+    <button type="submit"
+            class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors whitespace-nowrap">
+      Actualizar objetivo
+    </button>
+  </form>
+</div>
+
+<!-- Price history chart -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
+  <h2 class="text-lg font-semibold text-slate-800 mb-1 flex items-center gap-2">
+    📈 Historial de precios
+  </h2>
+
+  {% if history %}
+  <p class="text-sm text-slate-500 mb-4">{{ history | length }} punto{{ "s" if history | length != 1 else "" }} de datos registrado{{ "s" if history | length != 1 else "" }}</p>
+
+  <div class="relative h-64">
+    <canvas id="priceChart"></canvas>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const ctx = document.getElementById("priceChart").getContext("2d");
+
+      const labels = {{ chart_labels | tojson }};
+      const prices = {{ chart_prices | tojson }};
+      const targetPrice = {{ product.target_price or 'null' }};
+
+      const datasets = [
+        {
+          label: "Precio",
+          data: prices,
+          borderColor: "#16a34a",
+          backgroundColor: "rgba(22, 163, 74, 0.08)",
+          borderWidth: 2,
+          pointRadius: prices.length > 30 ? 0 : 4,
+          pointHoverRadius: 6,
+          fill: true,
+          tension: 0.3,
+        }
+      ];
+
+      if (targetPrice) {
+        datasets.push({
+          label: "Precio objetivo",
+          data: new Array(labels.length).fill(targetPrice),
+          borderColor: "#f59e0b",
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          fill: false,
+        });
+      }
+
+      new Chart(ctx, {
+        type: "line",
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "top" },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` $${ctx.parsed.y.toFixed(2)}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: "#f1f5f9" },
+              ticks: { color: "#94a3b8", maxTicksLimit: 8 }
+            },
+            y: {
+              grid: { color: "#f1f5f9" },
+              ticks: {
+                color: "#94a3b8",
+                callback: (v) => `$${v.toFixed(0)}`
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+
+  {% else %}
+  <div class="text-center py-12 text-slate-400">
+    <div class="text-4xl mb-3">📊</div>
+    <p class="text-sm">No hay historial de precios aún.<br/>El bot revisará el precio próximamente.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Raw history table -->
+{% if history %}
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+  <div class="px-6 py-4 border-b border-slate-100">
+    <h2 class="text-lg font-semibold text-slate-800">Registros de precio</h2>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+        <tr>
+          <th class="text-left px-6 py-3">Fecha</th>
+          <th class="text-right px-6 py-3">Precio</th>
+          <th class="text-right px-6 py-3">vs Objetivo</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for h in history | reverse %}
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="px-6 py-3 text-slate-600 font-mono text-xs">{{ h.recorded_at | fmt_date }}</td>
+          <td class="px-6 py-3 text-right font-semibold
+            {% if product.target_price and h.price <= product.target_price %}text-brand-600
+            {% elif product.target_price and h.price <= product.target_price * 1.1 %}text-amber-500
+            {% else %}text-slate-700{% endif %}">
+            {{ h.price | fmt_price }}
+          </td>
+          <td class="px-6 py-3 text-right">
+            {% if product.target_price %}
+            {% set diff = h.price - product.target_price %}
+            {% if diff <= 0 %}
+            <span class="text-brand-600 font-medium">{{ diff | fmt_price }} ✅</span>
+            {% else %}
+            <span class="text-slate-400">+{{ diff | fmt_price }}</span>
+            {% endif %}
+            {% else %}
+            <span class="text-slate-300">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
