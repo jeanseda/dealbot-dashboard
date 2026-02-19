@@ -315,12 +315,14 @@ def create_access_token(user_id: int) -> str:
 
 def validate_token(token: str) -> Optional[dict]:
     """Return token row if valid and not expired, else None."""
+    from app.database import USE_POSTGRES
+    now_fn = "NOW()" if USE_POSTGRES else "datetime('now')"
     with get_db() as conn:
         row = db_fetchone(
             conn,
             f"""SELECT * FROM access_tokens
                 WHERE token = {P}
-                  AND expires_at > NOW()""",
+                  AND expires_at > {now_fn}""",
             (token,),
         )
     return row
