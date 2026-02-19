@@ -3,7 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}DealBot 🎯{% endblock %}</title>
+  <title>{% block title %}DealBot — Track smarter. Buy better.{% endblock %}</title>
+  <meta name="description" content="DealBot rastrea precios en Amazon y te avisa por WhatsApp cuando bajan. Sin apps, sin cuentas." />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,14 +21,22 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              50:  '#f0fdf4',
-              100: '#dcfce7',
-              500: '#22c55e',
-              600: '#16a34a',
-              700: '#15803d',
-              900: '#14532d',
+            db: {
+              bg:           '#0d0d14',
+              surface:      '#13131f',
+              surface2:     '#1c1c2e',
+              border:       '#252535',
+              accent:       '#7c3aed',
+              'accent-hover': '#6d28d9',
+              'accent-light': '#a78bfa',
+              cyan:         '#22d3ee',
+              orange:       '#fb923c',
+              deal:         '#10b981',
+              muted:        '#6b7280',
             }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
           }
         }
       }
@@ -29,61 +46,81 @@
   <!-- HTMX -->
   <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
 
-  <!-- Chart.js (for price history) -->
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
 
-  <style>
-    /* Custom scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; }
-    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="/static/style.css" />
 
-    /* HTMX loading indicator */
-    .htmx-indicator { opacity: 0; transition: opacity 0.2s; }
-    .htmx-request .htmx-indicator,
-    .htmx-request.htmx-indicator { opacity: 1; }
-
-    /* Price badge animations */
-    @keyframes pulse-deal {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-      50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-    }
-    .badge-deal { animation: pulse-deal 2s infinite; }
-  </style>
+  {% block head %}{% endblock %}
 </head>
-<body class="h-full bg-slate-50 text-slate-800 antialiased">
+<body class="h-full bg-db-bg text-slate-200 antialiased font-sans">
 
   <!-- Navbar -->
-  <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+  <nav class="border-b border-db-border bg-db-bg/80 backdrop-blur-md sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-      <a href="/" class="flex items-center gap-2 font-bold text-lg text-brand-700 hover:text-brand-600 transition-colors">
-        <span class="text-2xl">🎯</span>
-        <span>DealBot</span>
+
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2.5 group flex-shrink-0">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="8" fill="url(#navLogoGrad)"/>
+          <path d="M19 5L11 18h6.5l-3.5 9L24 14h-6.5L19 5z" fill="white" opacity="0.95"/>
+          <defs>
+            <linearGradient id="navLogoGrad" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0%" stop-color="#7c3aed"/>
+              <stop offset="100%" stop-color="#22d3ee"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="font-bold text-sm text-white tracking-tight">DealBot</span>
       </a>
-      <div class="flex items-center gap-4 text-sm">
-        <a href="/" class="text-slate-600 hover:text-brand-600 transition-colors">Inicio</a>
-        <a href="/dashboard" class="text-slate-600 hover:text-brand-600 transition-colors">Mi Dashboard</a>
+
+      <!-- Nav links -->
+      <div class="flex items-center gap-1 text-sm">
+        <a href="/" class="text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all hidden sm:block">Inicio</a>
+        <a href="/dashboard" class="text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all hidden sm:block">Dashboard</a>
         <a href="https://wa.me/{{ whatsapp_number | replace('+', '') }}"
            target="_blank"
-           class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+           class="ml-1 bg-db-accent hover:bg-db-accent-hover text-white text-sm font-medium px-4 py-1.5 rounded-lg transition-all flex items-center gap-1.5 glow-accent">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
           </svg>
-          WhatsApp
+          <span class="hidden sm:inline">WhatsApp</span>
         </a>
       </div>
     </div>
   </nav>
 
   <!-- Page content -->
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <main>
     {% block content %}{% endblock %}
   </main>
 
   <!-- Footer -->
-  <footer class="mt-16 border-t border-slate-200 py-8 text-center text-sm text-slate-500">
-    <p>🎯 DealBot — Tu asistente de ofertas en WhatsApp</p>
-    <p class="mt-1">Hecho con ❤️ y FastAPI + HTMX</p>
+  <footer class="mt-24 border-t border-db-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <a href="/" class="flex items-center gap-2.5">
+          <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="url(#footerGrad)"/>
+            <path d="M19 5L11 18h6.5l-3.5 9L24 14h-6.5L19 5z" fill="white" opacity="0.95"/>
+            <defs>
+              <linearGradient id="footerGrad" x1="0" y1="0" x2="32" y2="32">
+                <stop offset="0%" stop-color="#7c3aed"/>
+                <stop offset="100%" stop-color="#22d3ee"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="font-semibold text-slate-500 text-sm">DealBot</span>
+        </a>
+        <div class="flex items-center gap-6 text-xs text-slate-600">
+          <a href="/" class="hover:text-slate-400 transition-colors">Inicio</a>
+          <a href="/dashboard" class="hover:text-slate-400 transition-colors">Dashboard</a>
+          <a href="https://wa.me/{{ whatsapp_number | replace('+', '') }}" target="_blank" class="hover:text-slate-400 transition-colors">WhatsApp</a>
+        </div>
+        <p class="text-xs text-slate-700">Track smarter. Buy better.</p>
+      </div>
+    </div>
   </footer>
 
 </body>

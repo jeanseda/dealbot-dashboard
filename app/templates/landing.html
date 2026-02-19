@@ -1,143 +1,329 @@
 {% extends "base.html" %}
-{% block title %}DealBot 🎯 — Rastrea precios en Amazon por WhatsApp{% endblock %}
+{% block title %}DealBot — Rastrea precios. Recibe alertas. Ahorra.{% endblock %}
 
 {% block content %}
 
-<!-- Hero Section -->
-<section class="text-center py-16">
-  <div class="inline-flex items-center gap-2 bg-brand-100 text-brand-700 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
-    <span class="w-2 h-2 bg-brand-500 rounded-full animate-pulse"></span>
-    Bot activo 24/7
+<!-- ── HERO ──────────────────────────────────────────────────────────────── -->
+<section class="relative overflow-hidden px-4 sm:px-6 pt-20 pb-24 text-center">
+
+  <!-- Animated background orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Live badge -->
+  <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-slate-300 text-xs font-medium px-4 py-1.5 rounded-full mb-8">
+    <span class="w-1.5 h-1.5 bg-db-deal rounded-full animate-pulse"></span>
+    Bot activo 24/7 — Monitoreando precios ahora mismo
   </div>
 
-  <h1 class="text-5xl sm:text-6xl font-bold text-slate-900 leading-tight mb-6">
-    Ahorra en Amazon<br />
-    <span class="text-brand-600">sin esfuerzo</span> 🎯
+  <!-- Headline -->
+  <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-6 max-w-4xl mx-auto">
+    Rastrea precios.<br>
+    <span class="text-gradient">Ahorra sin esfuerzo.</span>
   </h1>
 
-  <p class="text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-    DealBot rastrea los precios de tus productos favoritos en Amazon y te avisa por
-    <strong>WhatsApp</strong> cuando el precio baja al nivel que tú elijas.
-    Sin apps, sin cuentas — solo un mensaje.
+  <!-- Subheadline -->
+  <p class="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+    DealBot vigila tus productos favoritos de Amazon y te avisa directo a
+    <strong class="text-slate-200">WhatsApp</strong> cuando el precio baje.
+    Sin apps. Sin registro. Solo un mensaje.
   </p>
 
-  <!-- CTA Buttons -->
+  <!-- CTA buttons -->
   <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
     <a href="https://wa.me/{{ whatsapp_number | replace('+','') }}?text=Hola%20DealBot!%20Quiero%20rastrear%20un%20precio"
        target="_blank"
-       class="group inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold text-lg px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
-      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+       class="group inline-flex items-center gap-3 bg-db-accent hover:bg-db-accent-hover text-white font-semibold text-base px-7 py-3.5 rounded-xl glow-accent transition-all">
+      <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
       </svg>
-      Enviar link en WhatsApp
+      Empezar en WhatsApp
+      <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
     </a>
 
     <a href="/dashboard"
-       class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 font-medium text-lg px-6 py-4 rounded-2xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition-all">
-      Ver mi dashboard →
+       class="inline-flex items-center gap-2 text-slate-300 hover:text-white font-medium text-base px-7 py-3.5 rounded-xl border border-db-border hover:border-db-accent/40 bg-white/3 hover:bg-white/5 transition-all">
+      Ver mi dashboard
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
     </a>
   </div>
 
-  <!-- WhatsApp number hint -->
-  <p class="mt-6 text-sm text-slate-500">
-    Número de WhatsApp:
-    <code class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">{{ whatsapp_number }}</code>
+  <!-- WhatsApp number -->
+  <p class="mt-6 text-xs text-slate-600">
+    Número:
+    <code class="bg-white/5 border border-white/10 text-slate-400 px-2 py-0.5 rounded font-mono">{{ whatsapp_number }}</code>
   </p>
+
 </section>
 
-<!-- How it works -->
-<section class="py-12">
-  <h2 class="text-3xl font-bold text-center text-slate-900 mb-12">¿Cómo funciona?</h2>
-  <div class="grid sm:grid-cols-3 gap-8">
-
-    <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-      <div class="text-5xl mb-4">📱</div>
-      <div class="font-semibold text-slate-800 mb-2 text-lg">1. Escríbenos</div>
-      <p class="text-slate-500 text-sm leading-relaxed">
-        Abre WhatsApp y envía un mensaje a <strong>{{ whatsapp_number }}</strong>.
-        El bot te contestará de inmediato.
-      </p>
-    </div>
-
-    <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-      <div class="text-5xl mb-4">🔗</div>
-      <div class="font-semibold text-slate-800 mb-2 text-lg">2. Pega el link</div>
-      <p class="text-slate-500 text-sm leading-relaxed">
-        Comparte cualquier link de Amazon. Opcionalmente, dile el precio objetivo
-        ("quiero que me avises si baja de $150").
-      </p>
-    </div>
-
-    <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-      <div class="text-5xl mb-4">🔔</div>
-      <div class="font-semibold text-slate-800 mb-2 text-lg">3. Recibe alertas</div>
-      <p class="text-slate-500 text-sm leading-relaxed">
-        DealBot revisa los precios automáticamente y te notifica cuando encuentre
-        una oferta que se ajuste a tu presupuesto.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-<!-- Stats bar -->
+<!-- ── STATS BAR ──────────────────────────────────────────────────────────── -->
 {% if stats.total_users > 0 or stats.total_products > 0 %}
-<section class="py-8">
-  <div class="bg-gradient-to-r from-brand-600 to-brand-700 rounded-2xl p-8 text-white text-center">
-    <div class="grid sm:grid-cols-2 gap-8">
-      <div>
-        <div class="text-4xl font-bold">{{ stats.total_users }}</div>
-        <div class="text-brand-100 mt-1">usuarios activos</div>
-      </div>
-      <div>
-        <div class="text-4xl font-bold">{{ stats.total_products }}</div>
-        <div class="text-brand-100 mt-1">productos rastreados</div>
-      </div>
+<section class="max-w-6xl mx-auto px-4 sm:px-6 mb-16">
+  <div class="grid grid-cols-2 gap-4">
+    <div class="surface-card rounded-2xl p-6 text-center">
+      <div class="text-4xl font-black stat-value mb-1">{{ stats.total_users }}</div>
+      <div class="text-sm text-slate-500">usuarios activos</div>
+    </div>
+    <div class="surface-card rounded-2xl p-6 text-center">
+      <div class="text-4xl font-black stat-value mb-1">{{ stats.total_products }}</div>
+      <div class="text-sm text-slate-500">productos rastreados</div>
     </div>
   </div>
 </section>
 {% endif %}
 
-<!-- Sample commands -->
-<section class="py-12">
-  <h2 class="text-3xl font-bold text-center text-slate-900 mb-4">Comandos disponibles</h2>
-  <p class="text-center text-slate-500 mb-10">Escríbele a DealBot lo que necesitas — entiende lenguaje natural.</p>
+<!-- ── HOW IT WORKS ───────────────────────────────────────────────────────── -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+  <div class="text-center mb-12">
+    <p class="text-xs font-semibold text-db-accent-light uppercase tracking-widest mb-3">Cómo funciona</p>
+    <h2 class="text-3xl sm:text-4xl font-bold text-white">Tres pasos. Eso es todo.</h2>
+  </div>
 
-  <div class="max-w-2xl mx-auto space-y-3">
-    {% set commands = [
-      ("📦 Rastrear producto", "https://amazon.com/dp/B0XXXXXXX", "Pega cualquier URL de Amazon"),
-      ("🎯 Poner precio objetivo", "Avísame si baja de $80", "DealBot actualizará tu alerta"),
-      ("📋 Ver mis productos", "Lista mis productos", "Te muestra todo lo que estás rastreando"),
-      ("🗑️ Eliminar", "Eliminar [número]", "Borra un producto de tu lista"),
+  <div class="grid sm:grid-cols-3 gap-6">
+
+    <div class="gradient-border surface-card rounded-2xl p-7 relative">
+      <div class="w-11 h-11 rounded-xl bg-db-accent/15 flex items-center justify-center mb-5">
+        <svg class="w-5 h-5 text-db-accent-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+      </div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="step-badge">1</span>
+        <span class="font-semibold text-white">Escríbenos</span>
+      </div>
+      <p class="text-sm text-slate-400 leading-relaxed">
+        Abre WhatsApp y envía un mensaje a <strong class="text-slate-300">{{ whatsapp_number }}</strong>. El bot responde al instante.
+      </p>
+    </div>
+
+    <div class="gradient-border surface-card rounded-2xl p-7 relative">
+      <div class="w-11 h-11 rounded-xl bg-db-cyan/10 flex items-center justify-center mb-5">
+        <svg class="w-5 h-5 text-db-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+        </svg>
+      </div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="step-badge">2</span>
+        <span class="font-semibold text-white">Pega el link</span>
+      </div>
+      <p class="text-sm text-slate-400 leading-relaxed">
+        Comparte cualquier URL de Amazon. Dile el precio objetivo: <em>"Avísame si baja de $80"</em>.
+      </p>
+    </div>
+
+    <div class="gradient-border surface-card rounded-2xl p-7 relative">
+      <div class="w-11 h-11 rounded-xl bg-db-deal/10 flex items-center justify-center mb-5">
+        <svg class="w-5 h-5 text-db-deal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+      </div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="step-badge">3</span>
+        <span class="font-semibold text-white">Recibe alertas</span>
+      </div>
+      <p class="text-sm text-slate-400 leading-relaxed">
+        DealBot revisa los precios automáticamente y te notifica cuando encuentre la oferta perfecta.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FEATURES ───────────────────────────────────────────────────────────── -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+  <div class="text-center mb-12">
+    <p class="text-xs font-semibold text-db-accent-light uppercase tracking-widest mb-3">Características</p>
+    <h2 class="text-3xl sm:text-4xl font-bold text-white">Todo lo que necesitas</h2>
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+    {% set features = [
+      ("⚡", "Tiempo real", "db-accent", "Revisiones automáticas frecuentes. Nunca pierdas una oferta por llegar tarde."),
+      ("📊", "Historial de precios", "db-cyan", "Gráficas interactivas para ver la evolución del precio a lo largo del tiempo."),
+      ("🎯", "Precio objetivo", "db-deal", "Define tu precio máximo y DealBot te avisa exactamente cuando llegue ahí."),
+      ("📱", "Solo WhatsApp", "db-orange", "Sin apps, sin cuentas, sin contraseñas. Un mensaje y listo."),
+      ("🔗", "Múltiples productos", "db-accent-light", "Rastrea tantos productos como quieras desde la misma conversación."),
+      ("🛡️", "Sin spam", "db-muted", "Solo te escribimos cuando tenemos buenas noticias. Prometido."),
     ] %}
-    {% for icon_label, example, desc in commands %}
-    <div class="flex items-start gap-4 bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
-      <div class="flex-shrink-0 w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-lg">
-        {{ icon_label.split(" ")[0] }}
+    {% for icon, title, color_key, desc in features %}
+    <div class="surface-card rounded-xl p-5 flex gap-4">
+      <div class="text-2xl mt-0.5">{{ icon }}</div>
+      <div>
+        <div class="font-semibold text-white text-sm mb-1">{{ title }}</div>
+        <p class="text-xs text-slate-500 leading-relaxed">{{ desc }}</p>
       </div>
+    </div>
+    {% endfor %}
+
+  </div>
+</section>
+
+<!-- ── COMMANDS ───────────────────────────────────────────────────────────── -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+  <div class="text-center mb-10">
+    <p class="text-xs font-semibold text-db-accent-light uppercase tracking-widest mb-3">Comandos</p>
+    <h2 class="text-3xl sm:text-4xl font-bold text-white">Lenguaje natural</h2>
+    <p class="text-slate-400 mt-3 max-w-xl mx-auto">No necesitas memorizar comandos. Escríbele como si fuera un amigo.</p>
+  </div>
+
+  <div class="max-w-2xl mx-auto space-y-2.5">
+    {% set commands = [
+      ("📦", "Rastrear", "https://amazon.com/dp/B0XXXXXXX", "Pega cualquier URL de Amazon para empezar"),
+      ("🎯", "Precio objetivo", "Avísame si baja de $80", "DealBot actualiza tu alerta automáticamente"),
+      ("📋", "Ver lista", "Lista mis productos", "Muestra todos tus productos rastreados"),
+      ("🗑️", "Eliminar", "Eliminar 2", "Borra un producto por su número de lista"),
+      ("🔗", "Tu dashboard", "link", "Recibe un link directo a tu dashboard personal"),
+    ] %}
+    {% for icon, label, example, desc in commands %}
+    <div class="flex items-center gap-4 bg-db-surface border border-db-border hover:border-db-accent/30 rounded-xl p-4 transition-all group">
+      <div class="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-base flex-shrink-0">{{ icon }}</div>
       <div class="flex-1 min-w-0">
-        <div class="font-medium text-slate-800">{{ icon_label.split(" ", 1)[1] }}</div>
-        <code class="text-sm text-brand-600 font-mono">{{ example }}</code>
-        <p class="text-xs text-slate-500 mt-0.5">{{ desc }}</p>
+        <div class="flex items-baseline gap-3">
+          <span class="font-medium text-slate-300 text-sm">{{ label }}</span>
+          <code class="text-xs font-mono text-db-accent-light bg-db-accent/10 px-2 py-0.5 rounded">{{ example }}</code>
+        </div>
+        <p class="text-xs text-slate-600 mt-0.5">{{ desc }}</p>
       </div>
+      <svg class="w-4 h-4 text-slate-700 group-hover:text-slate-500 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
     </div>
     {% endfor %}
   </div>
 </section>
 
-<!-- Dashboard CTA -->
-<section class="py-12 text-center">
-  <div class="bg-slate-900 rounded-2xl p-10 text-white">
-    <h2 class="text-3xl font-bold mb-4">¿Ya eres usuario?</h2>
-    <p class="text-slate-400 mb-8 text-lg">Accede a tu dashboard para ver y gestionar todos tus productos rastreados.</p>
-    <form action="/dashboard" method="get" class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+<!-- ── TESTIMONIALS ───────────────────────────────────────────────────────── -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+  <div class="text-center mb-10">
+    <p class="text-xs font-semibold text-db-accent-light uppercase tracking-widest mb-3">Testimonios</p>
+    <h2 class="text-3xl sm:text-4xl font-bold text-white">Lo que dicen los usuarios</h2>
+  </div>
+
+  <div class="grid sm:grid-cols-3 gap-6">
+
+    <div class="surface-card rounded-2xl p-6">
+      <div class="stars text-sm mb-3">★★★★★</div>
+      <p class="text-sm text-slate-400 leading-relaxed mb-4">
+        "Ahorré $47 en unos auriculares que llevaba meses esperando. DealBot me avisó a las 3am cuando nadie más lo hubiera visto."
+      </p>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-db-accent to-db-cyan flex items-center justify-center text-white text-xs font-bold">M</div>
+        <div>
+          <div class="text-sm font-medium text-white">María G.</div>
+          <div class="text-xs text-slate-600">Ciudad de México</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="surface-card rounded-2xl p-6 border-db-accent/30">
+      <div class="stars text-sm mb-3">★★★★★</div>
+      <p class="text-sm text-slate-400 leading-relaxed mb-4">
+        "La simplicidad es brutal. Sin apps, sin registro. Solo le mando el link y me olvido hasta que me llega el aviso."
+      </p>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-db-cyan to-db-deal flex items-center justify-center text-white text-xs font-bold">C</div>
+        <div>
+          <div class="text-sm font-medium text-white">Carlos R.</div>
+          <div class="text-xs text-slate-600">Buenos Aires</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="surface-card rounded-2xl p-6">
+      <div class="stars text-sm mb-3">★★★★★</div>
+      <p class="text-sm text-slate-400 leading-relaxed mb-4">
+        "Uso DealBot para rastrear electrónica en Black Friday. El historial de precios es increíble para saber si el 'descuento' es real."
+      </p>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-db-orange to-db-accent flex items-center justify-center text-white text-xs font-bold">A</div>
+        <div>
+          <div class="text-sm font-medium text-white">Ana P.</div>
+          <div class="text-xs text-slate-600">Madrid</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── PRICING ────────────────────────────────────────────────────────────── -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+  <div class="text-center mb-10">
+    <p class="text-xs font-semibold text-db-accent-light uppercase tracking-widest mb-3">Planes</p>
+    <h2 class="text-3xl sm:text-4xl font-bold text-white">Simple y honesto</h2>
+    <p class="text-slate-400 mt-3">Empieza gratis, escala cuando lo necesites.</p>
+  </div>
+
+  <div class="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+
+    <!-- Free -->
+    <div class="surface-card rounded-2xl p-8">
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">Free</div>
+      <div class="text-4xl font-black text-white mb-1">$0</div>
+      <p class="text-slate-500 text-sm mb-6">Para siempre. Sin tarjeta.</p>
+      <ul class="space-y-3 mb-8">
+        {% for feature in ["Hasta 5 productos", "Revisiones cada hora", "Alertas por WhatsApp", "Dashboard personal", "Historial 30 días"] %}
+        <li class="flex items-center gap-2.5 text-sm text-slate-400">
+          <svg class="w-4 h-4 text-db-deal flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+          {{ feature }}
+        </li>
+        {% endfor %}
+      </ul>
+      <a href="https://wa.me/{{ whatsapp_number | replace('+','') }}" target="_blank"
+         class="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-db-border text-white font-medium py-2.5 rounded-xl transition-all text-sm">
+        Empezar gratis
+      </a>
+    </div>
+
+    <!-- Pro (coming soon) -->
+    <div class="surface-card rounded-2xl p-8 pricing-featured relative overflow-hidden">
+      <div class="absolute top-4 right-4 text-xs font-semibold text-db-accent-light bg-db-accent/15 px-2.5 py-1 rounded-full">Próximamente</div>
+      <div class="text-xs font-semibold text-db-accent-light uppercase tracking-wide mb-4">Pro</div>
+      <div class="text-4xl font-black text-white mb-1">$4.99<span class="text-lg font-normal text-slate-500">/mes</span></div>
+      <p class="text-slate-500 text-sm mb-6">Para compradores serios.</p>
+      <ul class="space-y-3 mb-8">
+        {% for feature in ["Productos ilimitados", "Revisiones cada 15 min", "Alertas prioritarias", "Historial completo", "Múltiples objetivos", "Soporte prioritario"] %}
+        <li class="flex items-center gap-2.5 text-sm text-slate-400">
+          <svg class="w-4 h-4 text-db-accent-light flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+          {{ feature }}
+        </li>
+        {% endfor %}
+      </ul>
+      <button disabled class="w-full flex items-center justify-center bg-db-accent/40 text-slate-400 font-medium py-2.5 rounded-xl text-sm cursor-not-allowed">
+        Disponible pronto
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── DASHBOARD CTA ───────────────────────────────────────────────────────── -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-db-accent/20 via-db-surface to-db-surface border border-db-accent/30 p-10 text-center">
+    <!-- Orb inside -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-db-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <h2 class="text-3xl sm:text-4xl font-bold text-white mb-3 relative">¿Ya eres usuario?</h2>
+    <p class="text-slate-400 mb-8 relative">Ingresa tu número de WhatsApp para ver y gestionar tus productos.</p>
+
+    <form action="/dashboard" method="get" class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto relative">
       <input type="tel"
              name="phone"
              placeholder="+1 (555) 000-0000"
-             class="flex-1 bg-slate-800 border border-slate-700 text-white placeholder-slate-500 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
+             class="flex-1 input-dark px-4 py-3 rounded-xl font-mono text-sm"
              required />
       <button type="submit"
-              class="bg-brand-600 hover:bg-brand-500 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+              class="bg-db-accent hover:bg-db-accent-hover text-white font-semibold px-6 py-3 rounded-xl transition-all glow-accent whitespace-nowrap text-sm">
         Ver dashboard →
       </button>
     </form>

@@ -1,281 +1,345 @@
 {% extends "base.html" %}
-{% block title %}{{ product.title or "Producto" }} — DealBot 🎯{% endblock %}
+{% block title %}{{ product.title or "Producto" }} — DealBot{% endblock %}
 
 {% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
 
-<!-- Back link -->
-<div class="mb-6">
-  <a href="/dashboard?phone={{ user_phone }}"
-     class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors group">
-    <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-    </svg>
-    Volver al dashboard
-  </a>
-</div>
+  <!-- Back link -->
+  <div class="mb-6">
+    <a href="/dashboard?phone={{ user_phone }}"
+       class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors group">
+      <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Volver al dashboard
+    </a>
+  </div>
 
-<!-- Product header -->
-<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
-  <div class="flex flex-col md:flex-row gap-0">
+  <!-- Product header card -->
+  <div class="surface-card rounded-2xl overflow-hidden mb-5">
+    <div class="flex flex-col md:flex-row">
 
-    <!-- Image -->
-    <div class="md:w-64 bg-slate-50 flex items-center justify-center p-8 flex-shrink-0">
-      {% if product.image_url %}
-      <img src="{{ product.image_url }}"
-           alt="{{ product.title or 'Producto' }}"
-           class="w-48 h-48 object-contain" />
-      {% else %}
-      <div class="w-48 h-48 flex items-center justify-center text-6xl text-slate-200">📦</div>
-      {% endif %}
-    </div>
-
-    <!-- Info -->
-    <div class="flex-1 p-6 md:p-8">
-      <!-- Badges -->
-      <div class="flex items-center gap-2 mb-3">
-        <span class="text-xs font-semibold uppercase bg-orange-100 text-orange-700 px-2.5 py-0.5 rounded-full">
-          {{ product.source }}
-        </span>
-        {% if product.asin %}
-        <span class="text-xs text-slate-400 font-mono">ASIN: {{ product.asin }}</span>
-        {% endif %}
-        {% if status == 'deal' %}
-        <span class="badge-deal text-xs font-semibold bg-brand-100 text-brand-700 px-2.5 py-0.5 rounded-full">
-          🎉 ¡Precio objetivo alcanzado!
-        </span>
-        {% elif status == 'close' %}
-        <span class="text-xs font-semibold bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full">
-          🔥 Cerca del objetivo
-        </span>
+      <!-- Image -->
+      <div class="md:w-56 bg-white/3 flex items-center justify-center p-8 flex-shrink-0">
+        {% if product.image_url %}
+        <img src="{{ product.image_url }}"
+             alt="{{ product.title or 'Producto' }}"
+             class="w-40 h-40 object-contain rounded-xl" />
+        {% else %}
+        <div class="w-40 h-40 flex items-center justify-center rounded-xl bg-db-surface2 border border-db-border">
+          <svg class="w-12 h-12 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+        </div>
         {% endif %}
       </div>
 
-      <!-- Title -->
-      <h1 class="text-2xl font-bold text-slate-900 mb-4 leading-snug">
-        {{ product.title or "Producto sin título" }}
-      </h1>
+      <!-- Info -->
+      <div class="flex-1 p-6 md:p-8">
+        <!-- Badges row -->
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <span class="text-xs font-semibold uppercase bg-db-orange/15 text-db-orange border border-db-orange/20 px-2.5 py-0.5 rounded-full">
+            {{ product.source }}
+          </span>
+          {% if product.asin %}
+          <span class="text-xs text-slate-600 font-mono bg-white/3 px-2.5 py-0.5 rounded-full border border-db-border">ASIN: {{ product.asin }}</span>
+          {% endif %}
+          {% if status == 'deal' %}
+          <span class="badge-deal text-xs font-semibold bg-db-deal/15 text-db-deal border border-db-deal/20 px-2.5 py-0.5 rounded-full glow-deal">
+            ⚡ ¡Precio objetivo alcanzado!
+          </span>
+          {% elif status == 'close' %}
+          <span class="text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
+            🔥 Cerca del objetivo
+          </span>
+          {% endif %}
+        </div>
 
-      <!-- Price cards -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-        <div class="bg-slate-50 rounded-xl p-4 text-center">
-          <div class="text-xs text-slate-400 mb-1">Precio actual</div>
-          <div class="text-2xl font-bold
-            {% if status == 'deal' %}text-brand-600
-            {% elif status == 'close' %}text-amber-500
-            {% else %}text-slate-800{% endif %}">
-            {{ product.current_price | fmt_price }}
+        <!-- Title -->
+        <h1 class="text-xl sm:text-2xl font-bold text-white mb-5 leading-snug">
+          {{ product.title or "Producto sin título" }}
+        </h1>
+
+        <!-- Price grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+          <div class="bg-white/3 border border-db-border rounded-xl p-3.5 text-center">
+            <div class="text-xs text-slate-600 mb-1">Precio actual</div>
+            <div class="text-xl font-black
+              {% if status == 'deal' %}text-db-deal
+              {% elif status == 'close' %}text-amber-400
+              {% else %}text-white{% endif %}">
+              {{ product.current_price | fmt_price }}
+            </div>
+          </div>
+          <div class="bg-white/3 border border-db-border rounded-xl p-3.5 text-center">
+            <div class="text-xs text-slate-600 mb-1">Objetivo</div>
+            <div class="text-xl font-black text-slate-400">{{ product.target_price | fmt_price }}</div>
+          </div>
+          <div class="bg-db-deal/8 border border-db-deal/15 rounded-xl p-3.5 text-center">
+            <div class="text-xs text-slate-600 mb-1">📉 Mínimo</div>
+            <div class="text-xl font-black text-db-deal">{{ product.lowest_price | fmt_price }}</div>
+          </div>
+          <div class="bg-red-500/8 border border-red-500/15 rounded-xl p-3.5 text-center">
+            <div class="text-xs text-slate-600 mb-1">📈 Máximo</div>
+            <div class="text-xl font-black text-red-400">{{ product.highest_price | fmt_price }}</div>
           </div>
         </div>
-        <div class="bg-slate-50 rounded-xl p-4 text-center">
-          <div class="text-xs text-slate-400 mb-1">Precio objetivo</div>
-          <div class="text-2xl font-bold text-slate-700">{{ product.target_price | fmt_price }}</div>
-        </div>
-        <div class="bg-green-50 rounded-xl p-4 text-center">
-          <div class="text-xs text-slate-400 mb-1">📉 Mínimo histórico</div>
-          <div class="text-2xl font-bold text-green-600">{{ product.lowest_price | fmt_price }}</div>
-        </div>
-        <div class="bg-red-50 rounded-xl p-4 text-center">
-          <div class="text-xs text-slate-400 mb-1">📈 Máximo histórico</div>
-          <div class="text-2xl font-bold text-red-500">{{ product.highest_price | fmt_price }}</div>
-        </div>
-      </div>
 
-      <!-- Meta -->
-      <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-500 mb-6">
-        {% if product.last_checked_at %}
-        <span>🕐 Última revisión: {{ product.last_checked_at | fmt_date }}</span>
-        {% endif %}
-        {% if product.created_at %}
-        <span>📅 Rastreando desde: {{ product.created_at | fmt_date }}</span>
-        {% endif %}
-      </div>
-
-      <!-- External link -->
-      <div class="flex flex-wrap gap-3">
-        <a href="{{ product.url }}"
-           target="_blank"
-           class="inline-flex items-center gap-2 text-sm bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-medium transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-          </svg>
-          Ver en Amazon
-        </a>
-
-        <!-- Delete -->
-        <form action="/product/{{ product.id }}/delete" method="post">
-          <button type="submit"
-                  onclick="return confirm('¿Eliminar este producto?')"
-                  class="inline-flex items-center gap-2 text-sm text-red-500 hover:text-red-700 border border-red-200 hover:border-red-300 hover:bg-red-50 px-4 py-2 rounded-xl font-medium transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        <!-- Meta -->
+        <div class="flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-600 mb-5">
+          {% if product.last_checked_at %}
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            Eliminar producto
-          </button>
-        </form>
+            Última revisión: {{ product.last_checked_at | fmt_date }}
+          </span>
+          {% endif %}
+          {% if product.created_at %}
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            Rastreando desde: {{ product.created_at | fmt_date }}
+          </span>
+          {% endif %}
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-wrap gap-3">
+          <a href="{{ product.url }}"
+             target="_blank"
+             class="inline-flex items-center gap-2 text-xs bg-db-orange hover:bg-orange-500 text-white px-4 py-2.5 rounded-xl font-medium transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            Ver en Amazon
+          </a>
+
+          <form action="/product/{{ product.id }}/delete" method="post">
+            <button type="submit"
+                    onclick="return confirm('¿Eliminar este producto?')"
+                    class="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-red-400 border border-db-border hover:border-red-500/30 hover:bg-red-500/10 px-4 py-2.5 rounded-xl font-medium transition-all">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              Eliminar
+            </button>
+          </form>
+        </div>
+
       </div>
-
     </div>
   </div>
-</div>
 
-<!-- Edit target price -->
-<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
-  <h2 class="text-lg font-semibold text-slate-800 mb-1 flex items-center gap-2">
-    🎯 Precio objetivo
-  </h2>
-  <p class="text-sm text-slate-500 mb-4">
-    DealBot te avisará por WhatsApp cuando el precio baje a este nivel.
-  </p>
-
-  <form action="/product/{{ product.id }}/target" method="post" class="flex flex-col sm:flex-row gap-3 max-w-sm">
-    <div class="relative flex-1">
-      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
-      <input type="number"
-             name="target_price"
-             step="0.01"
-             min="0.01"
-             value="{{ product.target_price or '' }}"
-             placeholder="0.00"
-             class="w-full pl-8 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-lg font-mono"
-             required />
+  <!-- Edit target price -->
+  <div class="surface-card rounded-2xl p-6 mb-5">
+    <div class="flex items-start gap-3 mb-4">
+      <div class="w-8 h-8 rounded-lg bg-db-accent/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <svg class="w-4 h-4 text-db-accent-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="font-semibold text-white text-sm">Precio objetivo</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Te avisamos por WhatsApp cuando el precio llegue aquí.</p>
+      </div>
     </div>
-    <button type="submit"
-            class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors whitespace-nowrap">
-      Actualizar objetivo
-    </button>
-  </form>
-</div>
 
-<!-- Price history chart -->
-<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
-  <h2 class="text-lg font-semibold text-slate-800 mb-1 flex items-center gap-2">
-    📈 Historial de precios
-  </h2>
-
-  {% if history %}
-  <p class="text-sm text-slate-500 mb-4">{{ history | length }} punto{{ "s" if history | length != 1 else "" }} de datos registrado{{ "s" if history | length != 1 else "" }}</p>
-
-  <div class="relative h-64">
-    <canvas id="priceChart"></canvas>
+    <form action="/product/{{ product.id }}/target" method="post" class="flex flex-col sm:flex-row gap-3 max-w-xs">
+      <div class="relative flex-1">
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-medium text-sm">$</span>
+        <input type="number"
+               name="target_price"
+               step="0.01"
+               min="0.01"
+               value="{{ product.target_price or '' }}"
+               placeholder="0.00"
+               class="w-full pl-8 pr-4 py-2.5 input-dark rounded-xl text-sm font-mono"
+               required />
+      </div>
+      <button type="submit"
+              class="bg-db-accent hover:bg-db-accent-hover text-white font-medium px-5 py-2.5 rounded-xl transition-all text-sm whitespace-nowrap glow-accent">
+        Actualizar
+      </button>
+    </form>
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const ctx = document.getElementById("priceChart").getContext("2d");
+  <!-- Price history chart -->
+  <div class="surface-card rounded-2xl p-6 mb-5">
+    <div class="flex items-start gap-3 mb-5">
+      <div class="w-8 h-8 rounded-lg bg-db-cyan/10 flex items-center justify-center flex-shrink-0">
+        <svg class="w-4 h-4 text-db-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="font-semibold text-white text-sm">Historial de precios</h2>
+        {% if history %}
+        <p class="text-xs text-slate-500 mt-0.5">{{ history | length }} punto{{ "s" if history | length != 1 else "" }} de datos registrado{{ "s" if history | length != 1 else "" }}</p>
+        {% endif %}
+      </div>
+    </div>
 
-      const labels = {{ chart_labels | tojson }};
-      const prices = {{ chart_prices | tojson }};
-      const targetPrice = {{ product.target_price or 'null' }};
+    {% if history %}
+    <div class="relative h-64 sm:h-72">
+      <canvas id="priceChart"></canvas>
+    </div>
 
-      const datasets = [
-        {
-          label: "Precio",
-          data: prices,
-          borderColor: "#16a34a",
-          backgroundColor: "rgba(22, 163, 74, 0.08)",
-          borderWidth: 2,
-          pointRadius: prices.length > 30 ? 0 : 4,
-          pointHoverRadius: 6,
-          fill: true,
-          tension: 0.3,
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById("priceChart").getContext("2d");
+
+        const labels = {{ chart_labels | tojson }};
+        const prices = {{ chart_prices | tojson }};
+        const targetPrice = {{ product.target_price or 'null' }};
+
+        const datasets = [
+          {
+            label: "Precio",
+            data: prices,
+            borderColor: "#a78bfa",
+            backgroundColor: "rgba(124, 58, 237, 0.08)",
+            borderWidth: 2,
+            pointRadius: prices.length > 30 ? 0 : 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: "#a78bfa",
+            pointBorderColor: "#0d0d14",
+            pointBorderWidth: 2,
+            fill: true,
+            tension: 0.4,
+          }
+        ];
+
+        if (targetPrice) {
+          datasets.push({
+            label: "Precio objetivo",
+            data: new Array(labels.length).fill(targetPrice),
+            borderColor: "#22d3ee",
+            borderWidth: 1.5,
+            borderDash: [6, 4],
+            pointRadius: 0,
+            fill: false,
+          });
         }
-      ];
 
-      if (targetPrice) {
-        datasets.push({
-          label: "Precio objetivo",
-          data: new Array(labels.length).fill(targetPrice),
-          borderColor: "#f59e0b",
-          borderWidth: 2,
-          borderDash: [6, 4],
-          pointRadius: 0,
-          fill: false,
-        });
-      }
-
-      new Chart(ctx, {
-        type: "line",
-        data: { labels, datasets },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: "top" },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => ` $${ctx.parsed.y.toFixed(2)}`
+        new Chart(ctx, {
+          type: "line",
+          data: { labels, datasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "top",
+                labels: {
+                  color: "#64748b",
+                  font: { family: "Inter", size: 11 },
+                  usePointStyle: true,
+                  pointStyleWidth: 8,
+                  padding: 16,
+                }
+              },
+              tooltip: {
+                backgroundColor: "#1c1c2e",
+                titleColor: "#f1f5f9",
+                bodyColor: "#94a3b8",
+                borderColor: "#252535",
+                borderWidth: 1,
+                padding: 10,
+                callbacks: {
+                  label: (ctx) => ` $${ctx.parsed.y.toFixed(2)}`
+                }
               }
-            }
-          },
-          scales: {
-            x: {
-              grid: { color: "#f1f5f9" },
-              ticks: { color: "#94a3b8", maxTicksLimit: 8 }
             },
-            y: {
-              grid: { color: "#f1f5f9" },
-              ticks: {
-                color: "#94a3b8",
-                callback: (v) => `$${v.toFixed(0)}`
+            scales: {
+              x: {
+                grid: { color: "rgba(255,255,255,0.04)" },
+                ticks: {
+                  color: "#4b5563",
+                  font: { family: "Inter", size: 10 },
+                  maxTicksLimit: 8
+                },
+                border: { color: "#252535" }
+              },
+              y: {
+                grid: { color: "rgba(255,255,255,0.04)" },
+                ticks: {
+                  color: "#4b5563",
+                  font: { family: "Inter", size: 10 },
+                  callback: (v) => `$${v.toFixed(0)}`
+                },
+                border: { color: "#252535" }
               }
             }
           }
-        }
+        });
       });
-    });
-  </script>
+    </script>
 
-  {% else %}
-  <div class="text-center py-12 text-slate-400">
-    <div class="text-4xl mb-3">📊</div>
-    <p class="text-sm">No hay historial de precios aún.<br/>El bot revisará el precio próximamente.</p>
+    {% else %}
+    <div class="text-center py-12">
+      <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-db-surface2 border border-db-border flex items-center justify-center">
+        <svg class="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+      </div>
+      <p class="text-sm text-slate-600">No hay historial de precios aún.</p>
+      <p class="text-xs text-slate-700 mt-1">El bot revisará el precio próximamente.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Price history table -->
+  {% if history %}
+  <div class="surface-card rounded-2xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-db-border">
+      <h2 class="font-semibold text-white text-sm">Registros de precio</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-white/3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+          <tr>
+            <th class="text-left px-6 py-3">Fecha</th>
+            <th class="text-right px-6 py-3">Precio</th>
+            <th class="text-right px-6 py-3">vs Objetivo</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-db-border">
+          {% for h in history | reverse %}
+          <tr class="hover:bg-white/2 transition-colors">
+            <td class="px-6 py-3 text-slate-500 font-mono text-xs">{{ h.recorded_at | fmt_date }}</td>
+            <td class="px-6 py-3 text-right font-bold text-sm
+              {% if product.target_price and h.price <= product.target_price %}text-db-deal
+              {% elif product.target_price and h.price <= product.target_price * 1.1 %}text-amber-400
+              {% else %}text-white{% endif %}">
+              {{ h.price | fmt_price }}
+            </td>
+            <td class="px-6 py-3 text-right text-xs">
+              {% if product.target_price %}
+              {% set diff = h.price - product.target_price %}
+              {% if diff <= 0 %}
+              <span class="text-db-deal font-medium flex items-center justify-end gap-1">
+                {{ diff | fmt_price }}
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+              </span>
+              {% else %}
+              <span class="text-slate-600">+{{ diff | fmt_price }}</span>
+              {% endif %}
+              {% else %}
+              <span class="text-slate-700">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
   {% endif %}
-</div>
 
-<!-- Raw history table -->
-{% if history %}
-<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-  <div class="px-6 py-4 border-b border-slate-100">
-    <h2 class="text-lg font-semibold text-slate-800">Registros de precio</h2>
-  </div>
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-      <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-        <tr>
-          <th class="text-left px-6 py-3">Fecha</th>
-          <th class="text-right px-6 py-3">Precio</th>
-          <th class="text-right px-6 py-3">vs Objetivo</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-slate-100">
-        {% for h in history | reverse %}
-        <tr class="hover:bg-slate-50 transition-colors">
-          <td class="px-6 py-3 text-slate-600 font-mono text-xs">{{ h.recorded_at | fmt_date }}</td>
-          <td class="px-6 py-3 text-right font-semibold
-            {% if product.target_price and h.price <= product.target_price %}text-brand-600
-            {% elif product.target_price and h.price <= product.target_price * 1.1 %}text-amber-500
-            {% else %}text-slate-700{% endif %}">
-            {{ h.price | fmt_price }}
-          </td>
-          <td class="px-6 py-3 text-right">
-            {% if product.target_price %}
-            {% set diff = h.price - product.target_price %}
-            {% if diff <= 0 %}
-            <span class="text-brand-600 font-medium">{{ diff | fmt_price }} ✅</span>
-            {% else %}
-            <span class="text-slate-400">+{{ diff | fmt_price }}</span>
-            {% endif %}
-            {% else %}
-            <span class="text-slate-300">—</span>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
 </div>
-{% endif %}
-
 {% endblock %}
