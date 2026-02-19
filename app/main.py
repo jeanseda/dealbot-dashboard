@@ -4,14 +4,16 @@ Tracks Amazon deals via WhatsApp bot.
 """
 
 import os
+import secrets
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi import FastAPI, Request, Form, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
 
 from app.database import get_db, P, db_fetchone, db_fetchall, db_execute
 
@@ -23,6 +25,8 @@ STATIC_DIR = BASE_DIR / "static"
 
 WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "+14155238886")
 WHATSAPP_SANDBOX_JOIN = os.getenv("WHATSAPP_SANDBOX_JOIN", "join lucky-spoke")
+DASHBOARD_URL = os.getenv("DASHBOARD_URL", "https://dealbot-dashboard.onrender.com")
+TOKEN_EXPIRY_HOURS = 24
 
 # ── App ───────────────────────────────────────────────────────────────────────
 
@@ -289,4 +293,134 @@ async def product_row_partial(request: Request, product_id: int):
     return templates.TemplateResponse(
         "partials/product_row.html",
         {"request": request, "product": product},
+    )
+
+
+# ── Magic Link helpers ────────────────────────────────────────────────────────
+
+
+def create_access_token(user_id: int) -> str:
+    """Generate a cryptographically secure token and store it."""
+    token = secrets.token_urlsafe(32)
+    expires_at = datetime.utcnow() + timedelta(hours=TOKEN_EXPIRY_HOURS)
+    with get_db() as conn:
+        db_execute(
+            conn,
+            f"""INSERT INTO access_tokens (user_id, token, expires_at)
+                VALUES ({P}, {P}, {P})""",
+            (user_id, token, expires_at.isoformat()),
+        )
+    return token
+
+
+def validate_token(token: str) -> Optional[dict]:
+    """Return token row if valid and not expired, else None."""
+    with get_db() as conn:
+        row = db_fetchone(
+            conn,
+            f"""SELECT * FROM access_tokens
+                WHERE token = {P}
+                  AND expires_at > NOW()""",
+            (token,),
+        )
+    return row
+
+
+def mark_token_used(token: str):
+    """Record when the token was first used."""
+    with get_db() as conn:
+        db_execute(
+            conn,
+            f"""UPDATE access_tokens
+                SET used_at = NOW()
+                WHERE token = {P} AND used_at IS NULL""",
+            (token,),
+        )
+
+
+# ── Magic Link routes ─────────────────────────────────────────────────────────
+
+
+class GenerateLinkRequest(BaseModel):
+    phone: str
+
+
+@app.post("/api/generate-link")
+async def generate_link(body: GenerateLinkRequest):
+    """
+    Generate a magic link for a user by phone number.
+    Body: {"phone": "+1234567890"}
+    Returns: {"url": "...", "expires_in": "24h"}
+    """
+    phone = body.phone.strip()
+    user = get_user_by_phone(phone)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No se encontró ningún usuario con el número {phone}",
+        )
+
+    token = create_access_token(user["id"])
+    url = f"{DASHBOARD_URL}/d/{token}"
+
+    return JSONResponse({
+        "url": url,
+        "expires_in": f"{TOKEN_EXPIRY_HOURS}h",
+        "phone": phone,
+    })
+
+
+@app.get("/d/{token}", response_class=HTMLResponse)
+async def magic_link_dashboard(request: Request, token: str):
+    """
+    Magic link entry point. Validates token and shows the user's dashboard.
+    If invalid/expired: shows friendly error page.
+    """
+    token_row = validate_token(token)
+
+    if not token_row:
+        # Token inválido o expirado
+        return templates.TemplateResponse(
+            "token_error.html",
+            {"request": request},
+            status_code=410,
+        )
+
+    # Mark as used (first use)
+    mark_token_used(token)
+
+    user_id = token_row["user_id"]
+    with get_db() as conn:
+        user = db_fetchone(
+            conn,
+            f"SELECT * FROM users WHERE id = {P}",
+            (user_id,),
+        )
+
+    if not user:
+        return templates.TemplateResponse(
+            "token_error.html",
+            {"request": request},
+            status_code=410,
+        )
+
+    products = get_products_for_user(user_id)
+    for p in products:
+        p["status"] = price_status(p.get("current_price"), p.get("target_price"))
+        p["savings"] = (
+            (p["current_price"] - p["target_price"])
+            if p.get("current_price") and p.get("target_price")
+            else None
+        )
+
+    return templates.TemplateResponse(
+        "dashboard.html",
+        {
+            "request": request,
+            "phone": user["phone_number"],
+            "user": user,
+            "products": products,
+            "error": None,
+            "via_magic_link": True,
+        },
     )

@@ -26,6 +26,18 @@ CREATE TABLE IF NOT EXISTS price_history (
     recorded_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Magic Link tokens for passwordless authentication
+CREATE TABLE IF NOT EXISTS access_tokens (
+    id          SERIAL PRIMARY KEY,
+    user_id     INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    token       VARCHAR(64) UNIQUE NOT NULL,
+    created_at  TIMESTAMP DEFAULT NOW(),
+    expires_at  TIMESTAMP NOT NULL,
+    used_at     TIMESTAMP NULL
+);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_tracked_products_user_id ON tracked_products(user_id);
 CREATE INDEX IF NOT EXISTS idx_price_history_product_id ON price_history(product_id);
+CREATE INDEX IF NOT EXISTS idx_access_tokens_token ON access_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_access_tokens_user_id ON access_tokens(user_id);
